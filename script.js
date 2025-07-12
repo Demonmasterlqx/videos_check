@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const videoPlayer = document.getElementById('video-player');
     const videoFolderInput = document.getElementById('video-folder-input');
+    const taskDescInput = document.getElementById('task-desc-input');
     const csvInput = document.getElementById('csv-input');
     const jumpToFileInput = document.getElementById('jump-to-file-input');
     const jumpBtn = document.getElementById('jump-btn');
@@ -14,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportCsvBtn = document.getElementById('export-csv-btn');
     const currentFileNameSpan = document.getElementById('current-file-name');
     const progressCounterSpan = document.getElementById('progress-counter');
+    const sceneInfoSpan = document.getElementById('scene-info');
+    const captionInfoSpan = document.getElementById('caption-info');
 
     // State
     let videoFiles = [];
@@ -24,8 +27,52 @@ document.addEventListener('DOMContentLoaded', () => {
         ref: [],
         ok: []
     };
+    let taskDescriptions = {};
 
     // --- 1. File and Data Loading ---
+
+    taskDescInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+            const content = await file.text();
+            const rows = content.split('\n').map(row => row.trim()).filter(Boolean);
+            if (rows.length < 2) {
+                alert('任务描述CSV文件格式不正确，至少需要包含表头和一行数据。');
+                return;
+            }
+
+            const headers = rows[0].split(',').map(h => h.trim());
+            const idIndex = headers.indexOf('id');
+            const sceneIndex = headers.indexOf('scene');
+            const captionIndex = headers.indexOf('caption');
+
+            if (idIndex === -1 || sceneIndex === -1 || captionIndex === -1) {
+                alert('CSV文件必须包含 "id", "scene", 和 "caption" 列。');
+                return;
+            }
+            
+            taskDescriptions = {}; // Reset descriptions
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i].split(',');
+                const id = row[idIndex]?.trim();
+                if (id) {
+                    taskDescriptions[id] = {
+                        scene: row[sceneIndex]?.trim() || '',
+                        caption: row[captionIndex]?.trim() || ''
+                    };
+                }
+            }
+            alert(`成功加载 ${Object.keys(taskDescriptions).length} 条任务描述。`);
+            if (currentIndex !== -1) {
+                updateUI(); // Refresh UI if a video is loaded
+            }
+        } catch (error) {
+            console.error(`Error reading task description file ${file.name}:`, error);
+            alert(`读取任务描述文件 ${file.name} 失败。`);
+        }
+    });
 
     videoFolderInput.addEventListener('change', (event) => {
         const files = Array.from(event.target.files);
@@ -234,11 +281,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateUI() {
         if (currentIndex !== -1) {
-            currentFileNameSpan.textContent = videoFiles[currentIndex].name;
+            const currentFile = videoFiles[currentIndex];
+            const fileNameWithoutExt = getFileNameWithoutExtension(currentFile.name);
+            
+            currentFileNameSpan.textContent = currentFile.name;
             progressCounterSpan.textContent = `${currentIndex + 1} / ${videoFiles.length}`;
+
+            const description = taskDescriptions[fileNameWithoutExt];
+            if (description) {
+                sceneInfoSpan.textContent = description.scene;
+                captionInfoSpan.textContent = description.caption;
+            } else {
+                sceneInfoSpan.textContent = '无';
+                captionInfoSpan.textContent = '无';
+            }
         } else {
             currentFileNameSpan.textContent = '无';
             progressCounterSpan.textContent = `0 / ${videoFiles.length}`;
+            sceneInfoSpan.textContent = '无';
+            captionInfoSpan.textContent = '无';
         }
     }
 

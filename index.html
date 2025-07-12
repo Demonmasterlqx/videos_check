@@ -13,6 +13,8 @@
             <div id="video-info">
                 <p>当前文件: <span id="current-file-name">无</span></p>
                 <p>进度: <span id="progress-counter">0 / 0</span></p>
+                <p>场景: <span id="scene-info">无</span></p>
+                <p>描述: <span id="caption-info">无</span></p>
             </div>
         </div>
         <div id="controls-container">
@@ -22,7 +24,11 @@
                 <input type="file" id="video-folder-input" webkitdirectory directory multiple>
             </div>
             <div class="control-group">
-                <label for="csv-input">2. (可选) 加载CSV进度:</label>
+                <label for="task-desc-input">2. 选择任务描述文件:</label>
+                <input type="file" id="task-desc-input" accept=".csv">
+            </div>
+            <div class="control-group">
+                <label for="csv-input">3. (可选) 加载CSV进度:</label>
                 <input type="file" id="csv-input" multiple accept=".csv">
             </div>
             <div class="control-group">
