@@ -106,14 +106,14 @@ button:hover {
     gap: 10px;
 }
 
-.classify-btn[data-category="hand"] { background-color: #ffc107; }
-.classify-btn[data-category="hand"]:hover { background-color: #e0a800; }
+.classify-btn[data-category="hand"] { background-color: #dc3545; }
+.classify-btn[data-category="hand"]:hover { background-color: #c82333; }
 .classify-btn[data-category="obj"] { background-color: #17a2b8; }
 .classify-btn[data-category="obj"]:hover { background-color: #138496; }
-.classify-btn[data-category="ref"] { background-color: #dc3545; }
-.classify-btn[data-category="ref"]:hover { background-color: #c82333; }
-.classify-btn[data-category="ok"] { background-color: #28a745; }
-.classify-btn[data-category="ok"]:hover { background-color: #218838; }
+.classify-btn[data-category="ref"] { background-color: #28a745; }
+.classify-btn[data-category="ref"]:hover { background-color: #218838; }
+.classify-btn[data-category="ok"] { background-color: #6f42c1; }
+.classify-btn[data-category="ok"]:hover { background-color: #5a32a3; }
 
 #export-csv-btn {
     background-color: #6c757d;
@@ -148,4 +148,10 @@ button:hover {
 .jump-control button {
     flex-grow: 0;
     width: 80px;
+}
+
+.classify-btn.active {
+    border: 2px solid #000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    transform: scale(1.05);
 }

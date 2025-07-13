@@ -221,16 +221,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("请先选择视频文件夹。");
                 return;
             }
-            const category = btn.dataset.category;
+            const newCategory = btn.dataset.category;
             const fileName = getFileNameWithoutExtension(videoFiles[currentIndex].name);
             
-            // Avoid duplicates
-            if (!classifications[category].includes(fileName)) {
-                classifications[category].push(fileName);
+            // Remove from any existing category first
+            Object.keys(classifications).forEach(cat => {
+                const index = classifications[cat].indexOf(fileName);
+                if (index > -1) {
+                    classifications[cat].splice(index, 1);
+                }
+            });
+
+            // Add to the new category
+            if (!classifications[newCategory].includes(fileName)) {
+                classifications[newCategory].push(fileName);
             }
             
-            console.log(`Classified '${fileName}' as '${category}'.`);
-            
+            console.log(`Classified '${fileName}' as '${newCategory}'.`);
+            updateUI(); // Update button styles immediately
+
             // Move to next video
             if (currentIndex < videoFiles.length - 1) {
                 loadVideo(currentIndex + 1);
@@ -295,11 +304,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 sceneInfoSpan.textContent = '无';
                 captionInfoSpan.textContent = '无';
             }
+
+            // Highlight the button for the current video's category
+            let currentCategory = null;
+            Object.keys(classifications).forEach(cat => {
+                if (classifications[cat].includes(fileNameWithoutExt)) {
+                    currentCategory = cat;
+                }
+            });
+
+            classifyBtns.forEach(btn => {
+                if (btn.dataset.category === currentCategory) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
         } else {
             currentFileNameSpan.textContent = '无';
             progressCounterSpan.textContent = `0 / ${videoFiles.length}`;
             sceneInfoSpan.textContent = '无';
             captionInfoSpan.textContent = '无';
+            classifyBtns.forEach(btn => btn.classList.remove('active'));
         }
     }
 
